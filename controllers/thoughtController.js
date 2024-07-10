@@ -28,13 +28,16 @@ module.exports = {
   // Create a thought
   async createThought(req, res) {
     try {
-      const thought = await Thought.create(req.body);
-      res.json(thought);
+      const newThought = await Thought.create(req.body);
+      await User.findByIdAndUpdate(req.body.user, { $push: { thoughts: newThought._id } });
+  
+      res.json(newThought);
     } catch (err) {
-      console.log(err);
-      return res.status(500).json(err);
+      res.status(500).json(err);
+      console.error(err);
     }
   },
+  
   // Delete a thought
   async deleteThought(req, res) {
     try {
